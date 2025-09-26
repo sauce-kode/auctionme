@@ -3,8 +3,6 @@ import "./db.types";
 import { env } from "../config";
 import { logger } from "../utils";
 
-console.log(env.DB_URL);
-
 export const pool = new Pool({
   connectionString: env.DB_URL,
   max: 10,
