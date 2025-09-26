@@ -1,64 +1,54 @@
+import fs from "node:fs";
 import path from "node:path";
 import { pool } from "../src/db";
-import fs from "node:fs";
 
-const SCHEMA_MIGRATION_TABLE_NAME = "schema_migrations";
-
-// ensure the schema_migrations table has been created; create it if it doesn't exist already
 async function ensureTable() {
-  await pool.query(
-    `CREATE TABLE IF NOT EXISTS ${SCHEMA_MIGRATION_TABLE_NAME} (
-    id SERIAL PRIMARY KEY,
-    migration_name TEXT NOT NULL UNIQUE,
-    applied_at TIMESTAMPTZ NOT NULL DEFAULT now()
-  )`
-  );
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS schema_migrations (
+      id serial primary key,
+      migration_name text not null unique,
+      applied_at timestamptz not null default now()
+    );
+  `);
 }
 
-// get all the migration files that have already been applied
 async function appliedSet(): Promise<Set<string>> {
   const { rows } = await pool.query<{ migration_name: string }>(
-    `SELECT migration_name FROM ${SCHEMA_MIGRATION_TABLE_NAME}`
+    `SELECT migration_name FROM schema_migrations`
   );
-
-  return new Set(rows.map((r) => r.migration_name));
+  return new Set(rows.map((r: { migration_name: any }) => r.migration_name));
 }
 
-/**
- * 1. ensure that the schema_migrations table exists
- * 2. form the path where the migration files are located
- * 3. get all migration files
- * 4. get all rows of migration files that have been applied.
- * 5. run migration
- */
 async function main() {
   await ensureTable();
+  // create migrations directory if it doesn't exist
+  if (!fs.existsSync(path.join(process.cwd(), "migrations"))) {
+    fs.mkdirSync(path.join(process.cwd(), "migrations"));
+  }
   const dir = path.join(process.cwd(), "migrations");
-  const migrationFiles = fs
+  const migration_files = fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".sql"))
     .sort();
-
   const done = await appliedSet();
 
-  for (const file of migrationFiles) {
-    if (done.has(file)) continue;
-    const sql = fs.readFileSync(path.join(dir, file), "utf-8");
-    console.log("Applying migration", file);
+  for (const migration_file of migration_files) {
+    if (done.has(migration_file)) continue;
+    const sql = fs.readFileSync(path.join(dir, migration_file), "utf8");
+    console.log("Applying", migration_file);
     await pool.query("BEGIN");
     try {
       await pool.query(sql);
       await pool.query(
-        `INSERT INTO ${SCHEMA_MIGRATION_TABLE_NAME} (migration_name) VALUES ($1)`,
-        [file]
+        `INSERT INTO schema_migrations (migration_name) VALUES ($1)`,
+        [migration_file]
       );
       await pool.query("COMMIT");
-    } catch (error) {
+    } catch (e) {
       await pool.query("ROLLBACK");
-      throw error;
+      throw e;
     }
   }
-
   await pool.end();
   console.log("Migrations complete");
 }

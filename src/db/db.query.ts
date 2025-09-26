@@ -5,6 +5,7 @@ import { QueryResultRow } from "pg";
 export const q = {
   many: async <T extends QueryResultRow>(text: string, params?: any[]) => {
     const { rows } = await pool.query<T>(text, params);
+    return rows;
   },
   one: async <T extends QueryResultRow>(text: string, params?: any[]) => {
     const { rows } = await pool.query<T>(text, params);
