@@ -1,15 +1,45 @@
 import { userSignup } from "@/modules/auth/services";
 import { signupSchema } from "@/modules/auth/validation";
 import { Request, Response } from "express";
+import z, { success } from "zod";
 
-export const signup = async (req: Request, res: Response) => {
-  const validatedData = signupSchema.parse(req.body);
+export const signup = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const validatedData = signupSchema.parse(req.body);
 
-  const createdUser = await userSignup(validatedData);
+    const createdUser = await userSignup(validatedData);
 
-  res.status(201).json({
-    success: true,
-    message: "Signed up successfully",
-    data: createdUser,
-  });
+    res.status(201).json({
+      success: true,
+      message: "Signed up successfully",
+      data: createdUser,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        success: false,
+        message: "Validation Error",
+        errors: error.issues,
+      });
+      return;
+    }
+
+    if (error instanceof Error) {
+      if (
+        error.message === "Email already exists" ||
+        error.message === "Username already exists"
+      ) {
+        res.status(409).json({
+          success: false,
+          message: error.message,
+        });
+        return;
+      }
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
 };
