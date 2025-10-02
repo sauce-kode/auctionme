@@ -6,7 +6,8 @@
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "migrate": "ts-node scripts/migrate.ts"
+    "migrate": "ts-node scripts/migrate.ts",
+    "gen-migration": "ts-node scripts/create-migration.ts"
   },
   "keywords": [],
   "author": "",

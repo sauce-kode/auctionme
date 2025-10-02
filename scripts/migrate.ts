@@ -5,7 +5,7 @@ import { pool } from "../src/db";
 async function ensureTable() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
-      id serial primary key,
+      id uuid primary key default gen_random_uuid(),
       migration_name text not null unique,
       applied_at timestamptz not null default now()
     );
@@ -34,6 +34,7 @@ async function main() {
 
   for (const migration_file of migration_files) {
     if (done.has(migration_file)) continue;
+
     const sql = fs.readFileSync(path.join(dir, migration_file), "utf8");
     console.log("Applying", migration_file);
     await pool.query("BEGIN");
