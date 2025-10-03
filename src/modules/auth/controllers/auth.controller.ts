@@ -1,5 +1,6 @@
-import { userSignup } from "@/modules/auth/services";
-import { signupSchema } from "@/modules/auth/validation";
+import { userSignup } from "../services";
+import { signupSchema } from "../validation";
+import { dbToApi } from "../../../utils";
 import { Request, Response } from "express";
 import z, { success } from "zod";
 
@@ -12,7 +13,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     res.status(201).json({
       success: true,
       message: "Signed up successfully",
-      data: createdUser,
+      data: dbToApi(createdUser),
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

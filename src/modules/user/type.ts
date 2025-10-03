@@ -14,4 +14,11 @@ export type User = {
   updated_at: string;
 };
 
-export type UserResponse = Omit<User, "password">;
+export type UserResponse = Omit<User, "password" | "created_at" | "updated_at">;
+
+export type CreateUserRequest = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};

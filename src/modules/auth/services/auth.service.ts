@@ -1,15 +1,16 @@
-import { signupInput } from "@/modules/auth/validation";
-import { createUser } from "@/modules/user/repositories";
-import { UserResponse } from "@/modules/user/type";
-import { generateHash } from "@/utils";
+import { signupInput } from "../validation";
+import { createUser } from "../../user/repositories";
+import { UserResponse } from "../../user/type";
+import { generateHash } from "../../../utils";
 
 export async function userSignup(data: signupInput): Promise<UserResponse> {
   try {
     const hashedPassword = await generateHash(data.password);
-    const createdUser = await createUser({ ...data, hashedPassword });
-    // send welcome email
+    data.password = hashedPassword;
+    const createdUser = await createUser(data);
 
-    const { password, ...userRes } = createdUser;
+    // send welcome email
+    const { password, created_at, updated_at, ...userRes } = createdUser;
     return userRes;
   } catch (error) {
     throw error;
