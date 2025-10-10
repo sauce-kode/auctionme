@@ -11,7 +11,7 @@ export interface ApiResponse<T = any> {
 export function sendSuccess<T>(
   res: Response,
   message: string,
-  statusCode: number,
+  statusCode: number = 200,
   data?: T
 ) {
   const response: ApiResponse<T> = {

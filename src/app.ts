@@ -5,11 +5,14 @@ import helmet from "helmet";
 import express from "express";
 import compression from "compression";
 import { authRoutes } from "./modules/auth";
+import { initRedis } from "./config";
 
-export function createApp() {
+export async function createApp() {
   const app = express();
 
   const basePath = `/api/v1`;
+
+  await initRedis();
 
   app.use(helmet());
   app.use(compression());

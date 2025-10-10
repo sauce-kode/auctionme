@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { email } from "zod";
 
 export const signupSchema = z.object({
   firstName: z
@@ -22,5 +22,26 @@ export const loginSchema = z.object({
     .min(6, "Password must be at least 6 characters"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.email("Enter your valid e-mail address").toLowerCase().trim(),
+});
+
+export const verifyResetPasswordOtpSchema = z.object({
+  email: z.email("Enter your valid e-mail address").toLowerCase().trim(),
+  otp: z.string("OTP is required").length(6, "OTP must be 6 characters"),
+});
+
+export const resetPasswordSchema = z.object({
+  email: z.email("Enter your valid e-mail address").toLowerCase().trim(),
+  password: z
+    .string("Password is required")
+    .min(6, "Password must be at least 6 characters"),
+});
+
 export type signupInput = z.infer<typeof signupSchema>;
 export type loginInput = z.infer<typeof loginSchema>;
+export type forgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type verifyresetPasswordOtpInput = z.infer<
+  typeof verifyResetPasswordOtpSchema
+>;
+export type resetPasswordInput = z.infer<typeof resetPasswordSchema>;
