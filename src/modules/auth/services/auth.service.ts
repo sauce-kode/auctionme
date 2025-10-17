@@ -18,7 +18,7 @@ import {
 } from "../../../utils";
 import jwt from "jsonwebtoken";
 import { env } from "../../../config";
-import { TokenPayload } from "../types";
+import { TokenPayload } from "../../../shared";
 import { createRefrehToken } from "../repositories";
 
 const FORGOT_PASSWORD_CACHE_PREFIX = "forgot-password-otp";
@@ -113,11 +113,15 @@ export async function userVerifyResetPasswordOtp(
 export async function userResetPassword(data: resetPasswordInput) {}
 
 async function generateAuthTokens(payload: TokenPayload) {
-  const accessToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
-    expiresIn: "24h",
-  });
+  const accessToken = await generateAccessToken(payload);
   const refreshToken = await generateRefreshToken(payload.userId);
   return { accessToken, refreshToken };
+}
+
+async function generateAccessToken(payload: TokenPayload) {
+  return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+    expiresIn: "24h",
+  });
 }
 
 async function generateRefreshToken(userId: string) {

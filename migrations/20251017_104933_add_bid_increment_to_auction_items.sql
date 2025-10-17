@@ -1,0 +1,1 @@
+ALTER TABLE auction_items ADD COLUMN bid_increment NUMERIC(4);

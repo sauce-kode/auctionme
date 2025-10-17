@@ -1,18 +1,4 @@
-export type User = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  avatar: string;
-  phone_number: string;
-  house_number: string;
-  street_name: string;
-  city: string;
-  state: string;
-  password: string;
-  created_at: string;
-  updated_at: string;
-};
+import { User } from "../../shared";
 
 export type UserResponse = Omit<User, "password" | "created_at" | "updated_at">;
 

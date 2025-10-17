@@ -5,6 +5,7 @@ import helmet from "helmet";
 import express from "express";
 import compression from "compression";
 import { authRoutes } from "./modules/auth";
+import { auctionItemRoutes } from "./modules/auction-items";
 import { initRedis } from "./config";
 
 export async function createApp() {
@@ -21,6 +22,7 @@ export async function createApp() {
   app.use(pinoHttp({ logger }));
 
   app.use(`${basePath}/auth`, authRoutes);
+  app.use(`${basePath}/auction-items`, auctionItemRoutes);
 
   app.use((req, res, next) => {
     res.status(404).json({

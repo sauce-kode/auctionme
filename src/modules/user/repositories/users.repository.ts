@@ -14,3 +14,7 @@ export async function createUser(data: CreateUserRequest): Promise<User> {
 export async function getUserByEmail(email: string) {
   return q.maybeOne<User>(`SELECT * FROM users WHERE email = $1`, [email]);
 }
+
+export async function getUserById(id: string) {
+  return q.maybeOne<User>(`SELECT * FROM users WHERE id = $1`, [id]);
+}
