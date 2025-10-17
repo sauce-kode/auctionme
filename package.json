@@ -7,7 +7,8 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "migrate": "ts-node scripts/migrate.ts",
-    "gen-migration": "ts-node scripts/create-migration.ts"
+    "gen-migration": "ts-node scripts/create-migration.ts",
+    "seed": "ts-node scripts/seed-auctions.ts"
   },
   "keywords": [],
   "author": "",

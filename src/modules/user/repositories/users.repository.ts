@@ -1,5 +1,6 @@
+import { User } from "../../../shared";
 import { q } from "../../../db/db.query";
-import { CreateUserRequest, User } from "../type";
+import { CreateUserRequest } from "../type";
 
 export async function createUser(data: CreateUserRequest): Promise<User> {
   const { firstName, lastName, email, password } = data;
